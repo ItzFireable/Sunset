@@ -45,6 +45,7 @@ import UserPreviousUsernamesTooltip from "@/app/(website)/user/[id]/components/U
 const contentTabs = [
   "General",
   "Best scores",
+  "Pinned scores",
   "Recent scores",
   "First places",
   "Beatmaps",
@@ -74,6 +75,15 @@ const renderTabContent = (
           gameMode={activeMode}
           userId={user.user_id}
           type={ScoreTableType.BEST}
+        />
+      );
+    case "Pinned scores":
+      return (
+        <UserTabScores
+          key={`pinned-${activeMode}`}
+          gameMode={activeMode}
+          userId={user.user_id}
+          type={ScoreTableType.PINNED}
         />
       );
     case "Recent scores":
