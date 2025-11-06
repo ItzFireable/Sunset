@@ -31,8 +31,10 @@ import {
 import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
 import ScoreStats from "@/components/ScoreStats";
-import { BeatmapStatusWeb } from "@/lib/types/api";
+import { BeatmapStatusWeb, PinResponse } from "@/lib/types/api";
 import { ModIcons } from "@/components/ModIcons";
+import { usePinScore, useUpdatePinScore } from "@/lib/hooks/api/score/usePinScore";
+import { toast } from "@/hooks/use-toast";
 
 export default function Score(props: { params: Promise<{ id: number }> }) {
   const params = use(props.params);
@@ -51,13 +53,37 @@ export default function Score(props: { params: Promise<{ id: number }> }) {
 
   const score = scoreQuery.data;
 
+  const pinQuery = usePinScore(params.id);
   const userQuery = useUser(score?.user_id ?? null);
   const beatmapQuery = useBeatmap(score?.beatmap_id ?? null);
 
   const user = userQuery?.data;
   const beatmap = beatmapQuery?.data;
+  const pinData = pinQuery?.data;
 
-  if (scoreQuery?.isLoading || userQuery?.isLoading || beatmapQuery?.isLoading)
+  const { trigger } = useUpdatePinScore(params.id);
+
+  const handlePinScore = async () => {
+    if (!self) return;
+
+    trigger(null, {
+      onSuccess: (data: PinResponse) => {
+        toast({
+          title: data?.is_pinned ? "Score pinned" : "Score unpinned",
+          variant: "success",
+        });
+      },
+      onError: (err: any) => {
+        toast({
+          title: "Error",
+          description: "Failed to pin score. Please try again later.",
+          variant: "destructive",
+        });
+      },
+    });
+  }
+
+  if (scoreQuery?.isLoading || userQuery?.isLoading || beatmapQuery?.isLoading || pinQuery?.isLoading)
     return (
       <div className="flex justify-center items-center h-96">
         <Spinner size="xl" />
@@ -68,6 +94,7 @@ export default function Score(props: { params: Promise<{ id: number }> }) {
     scoreQuery.error?.message ??
     userQuery?.error?.message ??
     beatmapQuery?.error?.message ??
+    pinQuery?.error?.message ??
     "Score not found";
 
   return (
@@ -78,7 +105,7 @@ export default function Score(props: { params: Promise<{ id: number }> }) {
         icon={<LucideHistory />}
       />
       <RoundedContent className="space-y-2 rounded-lg">
-        {score && user && beatmap ? (
+        {score && user && beatmap && pinData ? (
           <>
             <div>
               <div className="z-20 md:h-68 relative">
@@ -183,22 +210,21 @@ export default function Score(props: { params: Promise<{ id: number }> }) {
                       </Button>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="secondary" disabled={!self || true}>
+                          <Button variant="secondary" disabled={!self}>
                             <span className="sr-only">Open menu</span>
                             <MoreHorizontal className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                           {/* 
-                      TODO: Implement 
-                      <DropdownMenuItem onClick={() => console.log("todo")}>
-                        Report score 
-                      </DropdownMenuItem>
-
-                      TODO: Implement 
-                      <DropdownMenuItem onClick={() => console.log("todo")}>
-                        Pin score 
-                      </DropdownMenuItem>*/}
+                          TODO: Implement 
+                          <DropdownMenuItem onClick={() => console.log("todo")}>
+                            Report score
+                          </DropdownMenuItem>
+                          */}
+                          <DropdownMenuItem onClick={handlePinScore}>
+                            {pinData.is_pinned ? "Unpin score" : "Pin score"}
+                          </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </div>
