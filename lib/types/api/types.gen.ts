@@ -592,6 +592,11 @@ export type PerformanceAttributes = {
     state: ScoreState;
 };
 
+export type PinResponse = {
+    score_id: number;
+    is_pinned: boolean;
+};
+
 export type PreviousUsernamesResponse = {
     usernames: Array<string>;
 };
@@ -640,6 +645,7 @@ export type ScoreResponse = {
     grade: string;
     id: number;
     is_passed: boolean;
+    is_pinned: boolean;
     has_replay: boolean;
     leaderboard_rank?: number | null;
     max_combo: number;
@@ -669,7 +675,8 @@ export type ScoreState = {
 export enum ScoreTableType {
     BEST = 'Best',
     RECENT = 'Recent',
-    TOP = 'Top'
+    TOP = 'Top',
+    PINNED = 'Pinned'
 }
 
 export type ScoresResponse = {
@@ -1611,6 +1618,76 @@ export type GetScoreTopResponses = {
 };
 
 export type GetScoreTopResponse = GetScoreTopResponses[keyof GetScoreTopResponses];
+
+export type GetScoreByIdPinData = {
+    body?: never;
+    path: {
+        id: number;
+    };
+    query?: never;
+    url: '/score/{id}/pin';
+};
+
+export type GetScoreByIdPinErrors = {
+    /**
+     * Bad Request
+     */
+    400: ProblemDetailsResponseType;
+    /**
+     * Unauthorized
+     */
+    401: ProblemDetailsResponseType;
+    /**
+     * Not Found
+     */
+    404: ProblemDetailsResponseType;
+};
+
+export type GetScoreByIdPinError = GetScoreByIdPinErrors[keyof GetScoreByIdPinErrors];
+
+export type GetScoreByIdPinResponses = {
+    /**
+     * OK
+     */
+    200: PinResponse;
+};
+
+export type GetScoreByIdPinResponse = GetScoreByIdPinResponses[keyof GetScoreByIdPinResponses];
+
+export type PostScoreByIdPinData = {
+    body?: never;
+    path: {
+        id: number;
+    };
+    query?: never;
+    url: '/score/{id}/pin';
+};
+
+export type PostScoreByIdPinErrors = {
+    /**
+     * Bad Request
+     */
+    400: ProblemDetailsResponseType;
+    /**
+     * Unauthorized
+     */
+    401: ProblemDetailsResponseType;
+    /**
+     * Not Found
+     */
+    404: ProblemDetailsResponseType;
+};
+
+export type PostScoreByIdPinError = PostScoreByIdPinErrors[keyof PostScoreByIdPinErrors];
+
+export type PostScoreByIdPinResponses = {
+    /**
+     * OK
+     */
+    200: PinResponse;
+};
+
+export type PostScoreByIdPinResponse = PostScoreByIdPinResponses[keyof PostScoreByIdPinResponses];
 
 export type GetUserByIdData = {
     body?: never;

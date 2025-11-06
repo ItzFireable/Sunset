@@ -902,6 +902,11 @@ export const zPerformanceAttributes = z.object({
     state: zScoreState
 });
 
+export const zPinResponse = z.object({
+    score_id: z.number().int(),
+    is_pinned: z.boolean()
+});
+
 export const zPreviousUsernamesResponse = z.object({
     usernames: z.array(z.string())
 });
@@ -963,6 +968,7 @@ export const zScoreResponse = z.object({
     grade: z.string(),
     id: z.number().int(),
     is_passed: z.boolean(),
+    is_pinned: z.boolean(),
     has_replay: z.boolean(),
     leaderboard_rank: z.union([
         z.number().int(),
@@ -988,7 +994,8 @@ export const zScoreResponse = z.object({
 export const zScoreTableType = z.enum([
     'Best',
     'Recent',
-    'Top'
+    'Top',
+    'Pinned'
 ]);
 
 export const zScoresResponse = z.object({
@@ -1126,6 +1133,10 @@ export const zGetScoreByIdResponse = zScoreResponse;
 export const zGetScoreByIdReplayResponse = z.string();
 
 export const zGetScoreTopResponse = zScoresResponse;
+
+export const zGetScoreByIdPinResponse = zPinResponse;
+
+export const zPostScoreByIdPinResponse = zPinResponse;
 
 export const zGetUserByIdResponse = zUserResponse;
 
